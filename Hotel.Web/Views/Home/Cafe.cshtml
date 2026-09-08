@@ -1,0 +1,66 @@
+@{
+    ViewBag.Title = "کافی‌شاپ";
+    var categories = ViewBag.Categories as List<Hotel.Domain.Entities.CafeCategory> ?? new();
+}
+
+<section style="padding-top:40px">
+    <div class="container">
+        <div class="section-header">
+            <h2>کافی‌شاپ <span>پارسیان</span></h2>
+            <div class="section-divider"><i class="fas fa-coffee"></i></div>
+            <p>بهترین قهوه‌ها، دسرها و نوشیدنی‌های خاص در فضایی دنج و مجلل</p>
+        </div>
+
+        @if (categories.Any())
+        {
+            <!-- تب‌های دسته‌بندی -->
+            <div class="cafe-tabs">
+                <button class="cafe-tab" data-cat="all">همه</button>
+                @foreach (var cat in categories)
+                {
+                    <button class="cafe-tab" data-cat="cat-@cat.Id">
+                        @if (!string.IsNullOrEmpty(cat.IconClass)) { <i class="@cat.IconClass"></i> }
+                        @cat.Name
+                    </button>
+                }
+            </div>
+
+            <!-- آیتم‌های منو -->
+            @foreach (var cat in categories)
+            {
+                <div class="menu-section" data-cat="cat-@cat.Id" style="margin-bottom:40px">
+                    <h3 style="color:var(--gold);margin-bottom:20px;display:flex;align-items:center;gap:10px">
+                        @if (!string.IsNullOrEmpty(cat.IconClass)) { <i class="@cat.IconClass"></i> }
+                        @cat.Name
+                    </h3>
+                    <div class="menu-grid">
+                        @foreach (var item in cat.MenuItems)
+                        {
+                            <div class="menu-item-card anim-up">
+                                @if (!string.IsNullOrEmpty(item.ImagePath))
+                                { <img src="@item.ImagePath" alt="@item.Name" class="menu-thumb" /> }
+                                else
+                                { <div class="menu-thumb-ph"><i class="fas fa-coffee"></i></div> }
+                                <div class="menu-item-info">
+                                    @if (item.IsSpecial)
+                                    { <span class="menu-special-badge"><i class="fas fa-star"></i> پیشنهاد ویژه</span> }
+                                    <div class="menu-item-name">@item.Name</div>
+                                    @if (!string.IsNullOrEmpty(item.Description))
+                                    { <div class="menu-item-desc">@item.Description</div> }
+                                    <div class="menu-item-price">@item.Price.ToString("N0") <span style="font-size:.72rem;color:var(--text-muted)">تومان</span></div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div style="text-align:center;padding:60px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius)">
+                <i class="fas fa-coffee" style="font-size:3rem;color:var(--gold);opacity:.3;display:block;margin-bottom:16px"></i>
+                <p style="color:var(--text-muted)">منوی کافی‌شاپ به زودی توسط مدیر بارگذاری می‌شود</p>
+            </div>
+        }
+    </div>
+</section>

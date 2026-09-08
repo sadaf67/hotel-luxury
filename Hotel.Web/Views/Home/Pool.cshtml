@@ -1,0 +1,67 @@
+@{
+    ViewBag.Title = "استخر";
+    var sessions = ViewBag.Sessions as List<Hotel.Domain.Entities.PoolSession> ?? new();
+}
+
+<section style="padding-top:40px">
+    <div class="container">
+        <div class="section-header">
+            <h2>استخر <span>لوکس پارسیان</span></h2>
+            <div class="section-divider"><i class="fas fa-swimming-pool"></i></div>
+            <p>آب‌بازی در فضایی آرام و مجلل با آب گرم و خدمات حرفه‌ای</p>
+        </div>
+
+        <!-- امکانات استخر -->
+        <div class="features-grid" style="margin-bottom:64px">
+            <div class="feature-card anim-up"><i class="fas fa-hot-tub feature-icon"></i><h3>جکوزی</h3><p>جکوزی بزرگ با آب گرم و جریان آرامش‌بخش</p></div>
+            <div class="feature-card anim-up"><i class="fas fa-fire feature-icon"></i><h3>سونا</h3><p>سونا خشک و بخار با بهترین تجهیزات</p></div>
+            <div class="feature-card anim-up"><i class="fas fa-user-shield feature-icon"></i><h3>نجات‌غریق</h3><p>نجات‌غریق حرفه‌ای در تمام ساعات</p></div>
+            <div class="feature-card anim-up"><i class="fas fa-tshirt feature-icon"></i><h3>رختکن</h3><p>رختکن مجهز با لاکر اختصاصی</p></div>
+        </div>
+
+        <!-- جلسه‌های استخر -->
+        <div class="section-header">
+            <h2>برنامه <span>جلسه‌ها</span></h2>
+            <div class="section-divider"><i class="fas fa-clock"></i></div>
+        </div>
+
+        @if (sessions.Any())
+        {
+            <div class="pool-sessions-grid">
+                @foreach (var s in sessions)
+                {
+                    <div class="session-card anim-up">
+                        <div class="session-time">@s.StartTime.ToString(@"hh\:mm") — @s.EndTime.ToString(@"hh\:mm")</div>
+                        <div class="session-title">@s.Title</div>
+                        @if (!string.IsNullOrEmpty(s.Description))
+                        { <p style="color:var(--text-muted);font-size:.82rem;margin-bottom:16px">@s.Description</p> }
+                        <div class="session-prices">
+                            <div class="price-item">
+                                <div class="label">بزرگسال</div>
+                                <div class="amount">@s.AdultPrice.ToString("N0") ت</div>
+                            </div>
+                            <div class="price-item">
+                                <div class="label">کودک</div>
+                                <div class="amount">@s.ChildPrice.ToString("N0") ت</div>
+                            </div>
+                        </div>
+                        <div style="color:var(--text-muted);font-size:.78rem;margin-bottom:16px">
+                            <i class="fas fa-users" style="color:var(--gold)"></i> ظرفیت: @s.MaxCapacity نفر
+                        </div>
+                        <button class="btn btn-gold w-100" onclick="openPoolModal(@s.Id)">
+                            <i class="fas fa-calendar-plus"></i> رزرو این جلسه
+                        </button>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div style="text-align:center;padding:60px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius)">
+                <i class="fas fa-swimming-pool" style="font-size:3rem;color:var(--gold);opacity:.3;display:block;margin-bottom:16px"></i>
+                <p style="color:var(--text-muted)">برنامه استخر به زودی اعلام می‌شود. با ما در تماس باشید.</p>
+                <a href="/Home/Contact" class="btn btn-outline" style="margin-top:20px">تماس با ما</a>
+            </div>
+        }
+    </div>
+</section>

@@ -1,0 +1,8 @@
+@model List<Hotel.Domain.Entities.Room>
+@{ViewBag.Title="مدیریت اتاق‌ها";ViewBag.Active="rooms";}
+@Html.AntiForgeryToken()
+<div class="table-toolbar"><h3><i class="fas fa-bed"></i> اتاق‌ها (@Model.Count)</h3><a asp-action="Create" class="btn btn-gold"><i class="fas fa-plus"></i> اتاق جدید</a></div>
+<div class="admin-table-wrap"><div style="overflow-x:auto"><table class="admin-table"><thead><tr><th>تصویر</th><th>شماره</th><th>نام</th><th>نوع</th><th>ظرفیت</th><th>قیمت هر شب</th><th>وضعیت</th><th>عملیات</th></tr></thead><tbody>
+@foreach(var room in Model){<tr><td>@if(!string.IsNullOrEmpty(room.MainImagePath)){<img src="@room.MainImagePath" alt="" style="width:66px;height:45px;object-fit:cover;border-radius:8px"/>}else{<i class="fas fa-image" style="color:var(--text-muted)"></i>}</td><td>@room.RoomNumber</td><td>@room.Name</td><td>@room.RoomType</td><td>@room.Capacity نفر</td><td style="color:var(--gold)">@room.PricePerNight.ToString("N0")</td><td><span class="badge @(room.Status==Hotel.Domain.Enums.RoomStatus.Available?"badge-success":room.Status==Hotel.Domain.Enums.RoomStatus.Occupied?"badge-warning":"badge-danger")">@room.Status</span></td><td><div style="display:flex;gap:6px"><a asp-action="Edit" asp-route-id="@room.Id" class="btn btn-dark btn-sm"><i class="fas fa-edit"></i></a><button type="button" class="btn btn-sm" style="color:#e74c3c" onclick="deleteItem('/Admin/Rooms/Delete/@room.Id',document.querySelector('[name=__RequestVerificationToken]').value)"><i class="fas fa-trash"></i></button></div></td></tr>}
+@if(!Model.Any()){<tr><td colspan="8" style="text-align:center;padding:50px">هنوز اتاقی ثبت نشده است.</td></tr>}
+</tbody></table></div></div>

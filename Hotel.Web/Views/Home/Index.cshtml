@@ -1,0 +1,205 @@
+@{
+    ViewBag.Title = "صفحه اصلی";
+    var sliders = ViewBag.Sliders as List<Hotel.Domain.Entities.Slider> ?? new();
+    var rooms   = ViewBag.FeaturedRooms as List<Hotel.Domain.Entities.Room> ?? new();
+}
+
+<!-- ===================== HERO SLIDER ===================== -->
+<section class="hero" style="padding-top:0;margin-top:-70px">
+    <div class="slider-wrapper">
+        @if (sliders.Any())
+        {
+            @foreach (var slide in sliders)
+            {
+                <div class="slide">
+                    <img src="@slide.ImagePath" alt="@slide.Title" class="slide-bg" />
+                    <div class="slide-content">
+                        <div class="hero-divider"></div>
+                        <h1>@slide.Title</h1>
+                        <p>@slide.Subtitle</p>
+                        <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap">
+                            @if (!string.IsNullOrEmpty(slide.ButtonText))
+                            {
+                                <a href="@slide.ButtonUrl" class="btn btn-gold btn-lg">
+                                    <i class="fas fa-bed"></i> @slide.ButtonText
+                                </a>
+                            }
+                            <a href="/Home/Rooms" class="btn btn-outline btn-lg" data-i18n="hero_btn2">بیشتر بدانید</a>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="slide active">
+                <div class="slide-default-bg"></div>
+                <div class="slide-content">
+                    <div class="hero-divider"></div>
+                    <h1 data-i18n="hero_title">تجربه‌ای <span>بی‌نظیر</span> از اقامت لوکس</h1>
+                    <p data-i18n="hero_sub">هتل لوکس پارسیان — جایی که آسایش با شکوه در هم می‌آمیزد</p>
+                    <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-top:8px">
+                        <a href="/Home/Rooms" class="btn btn-gold btn-lg">
+                            <i class="fas fa-bed"></i> <span data-i18n="hero_btn1">رزرو اتاق</span>
+                        </a>
+                        <a href="#features" class="btn btn-outline btn-lg" data-i18n="hero_btn2">بیشتر بدانید</a>
+                    </div>
+                </div>
+            </div>
+        }
+
+        <button class="slider-btn slider-prev" aria-label="قبلی"><i class="fas fa-chevron-right"></i></button>
+        <button class="slider-btn slider-next" aria-label="بعدی"><i class="fas fa-chevron-left"></i></button>
+
+        <div class="slider-dots">
+            @for (int i = 0; i < Math.Max(sliders.Count, 1); i++)
+            {
+                <span class="dot @(i == 0 ? "active" : "")" data-index="@i"></span>
+            }
+        </div>
+    </div>
+</section>
+
+<div class="container booking-dock-wrap">
+    <form action="/Home/Rooms" method="get" class="booking-dock" id="bookingDock">
+        <div class="dock-heading"><span><i class="fas fa-key"></i></span><div><small>رزرو مستقیم</small><strong>اقامت خود را پیدا کنید</strong></div></div>
+        <label><span>تاریخ ورود</span><input type="date" name="checkIn" min="@DateTime.Today.ToString("yyyy-MM-dd")" value="@DateTime.Today.AddDays(1).ToString("yyyy-MM-dd")" required/></label>
+        <label><span>تاریخ خروج</span><input type="date" name="checkOut" min="@DateTime.Today.AddDays(1).ToString("yyyy-MM-dd")" value="@DateTime.Today.AddDays(2).ToString("yyyy-MM-dd")" required/></label>
+        <label><span>مهمان</span><select name="guests"><option value="1">۱ مهمان</option><option value="2" selected>۲ مهمان</option><option value="3">۳ مهمان</option><option value="4">۴ مهمان</option><option value="5">۵+ مهمان</option></select></label>
+        <button class="btn btn-gold btn-lg"><i class="fas fa-search"></i> بررسی اتاق‌ها</button>
+    </form>
+</div>
+
+<!-- ===================== STATS ===================== -->
+<div class="stats-bar">
+    <div class="container">
+        <div class="stats-grid">
+            <div class="stat-item anim-up">
+                <div class="stat-number" data-count="150">۰</div>
+                <div class="stat-label">اتاق و سوئیت</div>
+            </div>
+            <div class="stat-item anim-up">
+                <div class="stat-number" data-count="20">۰</div>
+                <div class="stat-label">سال سابقه</div>
+            </div>
+            <div class="stat-item anim-up">
+                <div class="stat-number" data-count="5000">۰</div>
+                <div class="stat-label">مهمان راضی</div>
+            </div>
+            <div class="stat-item anim-up">
+                <div class="stat-number" data-count="24">۰</div>
+                <div class="stat-label">ساعت خدمات</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ===================== FEATURES ===================== -->
+<section id="features">
+    <div class="container">
+        <div class="section-header">
+            <h2>امکانات <span>هتل</span></h2>
+            <div class="section-divider"><i class="fas fa-star"></i></div>
+            <p>تمام آنچه برای یک اقامت ایده‌آل نیاز دارید</p>
+        </div>
+        <div class="features-grid">
+            <div class="feature-card anim-up"><i class="fas fa-bed feature-icon"></i><h3 data-i18n="feat_rooms">اتاق‌های لوکس</h3><p>۱۵۰ اتاق و سوئیت مجهز با دکوراسیون مدرن</p></div>
+            <div class="feature-card anim-up"><i class="fas fa-swimming-pool feature-icon"></i><h3 data-i18n="feat_pool">استخر سرپوشیده</h3><p>استخر بزرگ با سه جلسه صبح، عصر و شب</p></div>
+            <div class="feature-card anim-up"><i class="fas fa-coffee feature-icon"></i><h3 data-i18n="feat_cafe">کافی‌شاپ</h3><p>منوی متنوع نوشیدنی‌ها و دسرهای خاص</p></div>
+            <div class="feature-card anim-up"><i class="fas fa-utensils feature-icon"></i><h3 data-i18n="feat_rest">رستوران</h3><p>غذاهای ایرانی و بین‌المللی با شیف مجرب</p></div>
+            <div class="feature-card anim-up"><i class="fas fa-spa feature-icon"></i><h3 data-i18n="feat_spa">سپا و ماساژ</h3><p>مرکز آرامش و طراوت با متخصصان حرفه‌ای</p></div>
+            <div class="feature-card anim-up"><i class="fas fa-car feature-icon"></i><h3 data-i18n="feat_park">پارکینگ</h3><p>پارکینگ اختصاصی رایگان برای مهمانان</p></div>
+        </div>
+    </div>
+</section>
+
+<section class="brand-story-section">
+    <div class="container brand-story">
+        <div class="story-visual anim-fade"><div class="story-image-main"></div><div class="story-seal"><strong>۲۰</strong><span>سال<br/>میزبانی</span></div></div>
+        <div class="story-copy anim-up"><span class="eyebrow">فلسفه میزبانی ما</span><h2>لوکس بودن یعنی<br/><span>دیده‌شدن جزئیات</span></h2><p>از لحظه ورود تا آخرین فنجان قهوه، هر تماس با مهمان طراحی شده است. اتاق آرام، سرویس دقیق و تیمی که پیش از درخواست شما آماده است.</p><div class="story-points"><div><i class="fas fa-concierge-bell"></i><span><b>میزبان اختصاصی</b><small>همراه شما در تمام اقامت</small></span></div><div><i class="fas fa-leaf"></i><span><b>آرامش آگاهانه</b><small>فضاهای کم‌صدا و سبز</small></span></div></div><a href="/Home/Gallery" class="text-link story-link">داستان هتل را ببینید <i class="fas fa-arrow-left"></i></a></div>
+    </div>
+</section>
+
+<!-- ===================== FEATURED ROOMS ===================== -->
+<section class="section-alt">
+    <div class="container">
+        <div class="section-header">
+            <h2 data-i18n="sec_rooms">اتاق‌های <span>ما</span></h2>
+            <div class="section-divider"><i class="fas fa-gem"></i></div>
+            <p>اتاق‌هایی که هر لحظه اقامت را به خاطره‌ای فراموش‌نشدنی تبدیل می‌کنند</p>
+        </div>
+        <div class="rooms-grid">
+            @foreach (var room in rooms)
+            {
+                <div class="room-card anim-up">
+                    <div class="room-img">
+                        @if (!string.IsNullOrEmpty(room.MainImagePath))
+                        { <img src="@room.MainImagePath" alt="@room.Name" loading="lazy" /> }
+                        else
+                        { <div class="room-placeholder"><i class="fas fa-bed"></i></div> }
+                        <span class="room-badge">@room.RoomType</span>
+                    </div>
+                    <div class="room-body">
+                        <h3 class="room-title">@room.Name</h3>
+                        <div class="room-meta">
+                            <span><i class="fas fa-users"></i> @room.Capacity نفر</span>
+                            <span><i class="fas fa-layer-group"></i> طبقه @room.Floor</span>
+                            @if (room.HasBalcony) { <span><i class="fas fa-wind"></i> بالکن</span> }
+                            @if (room.HasJacuzzi) { <span><i class="fas fa-hot-tub"></i> جکوزی</span> }
+                        </div>
+                        <p class="room-desc">@room.Description</p>
+                        <div class="room-footer">
+                            <div>
+                                <div class="price-label">قیمت از</div>
+                                <span class="price-value">@room.PricePerNight.ToString("N0")</span>
+                                <span class="price-unit"> تومان/شب</span>
+                            </div>
+                            <a href="/Reservation/Book/@room.Id" class="btn btn-gold btn-sm">
+                                <span data-i18n="reserve_btn">رزرو</span> <i class="fas fa-arrow-left"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            }
+
+            @if (!rooms.Any())
+            {
+                <div style="grid-column:1/-1;text-align:center;padding:60px;color:var(--text-muted)">
+                    <i class="fas fa-bed" style="font-size:3rem;color:var(--gold);opacity:.3;display:block;margin-bottom:16px"></i>
+                    <p>در حال بارگذاری اتاق‌ها...</p>
+                </div>
+            }
+        </div>
+        <div style="text-align:center;margin-top:48px">
+            <a href="/Home/Rooms" class="btn btn-outline btn-lg" data-i18n="view_all">
+                <i class="fas fa-th-large"></i> مشاهده همه اتاق‌ها
+            </a>
+        </div>
+    </div>
+</section>
+
+<section class="guest-voice-section"><div class="container"><div class="guest-voice"><i class="fas fa-quote-right quote-mark"></i><blockquote>«اینجا فقط یک اتاق رزرو نکردیم؛ چند روز آسودگی واقعی داشتیم. از برخورد پذیرش تا سکوت اتاق، همه‌چیز فکرشده بود.»</blockquote><div class="guest-author"><span>ن</span><div><strong>نیلوفر و آرمان</strong><small>مهمان سوئیت رویال · تهران</small></div><div class="guest-stars">★★★★★</div></div></div></div></section>
+
+<section class="direct-benefits"><div class="container"><div class="benefit-strip"><div><i class="fas fa-award"></i><span><b>تضمین بهترین نرخ</b><small>رزرو مستقیم، بدون واسطه</small></span></div><div><i class="fas fa-clock"></i><span><b>تایید سریع</b><small>پیگیری آنلاین وضعیت رزرو</small></span></div><div><i class="fas fa-headset"></i><span><b>پشتیبانی ۲۴ ساعته</b><small>قبل و در طول اقامت</small></span></div><a href="/Reservation/Track" class="btn btn-outline">پیگیری رزرو <i class="fas fa-arrow-left"></i></a></div></div></section>
+
+<!-- ===================== POOL + CAFE PREVIEW ===================== -->
+<section>
+    <div class="container">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:28px">
+            <!-- استخر -->
+            <div class="admin-card anim-up" style="padding:36px">
+                <i class="fas fa-swimming-pool" style="font-size:2.5rem;color:var(--gold);margin-bottom:16px"></i>
+                <h3 style="color:var(--text);font-size:1.3rem;margin-bottom:12px">استخر سرپوشیده</h3>
+                <p style="color:var(--text-muted);margin-bottom:24px;line-height:1.8">آب‌بازی در فضایی آرام و مجلل. ۳ جلسه روزانه، جکوزی، سونا.</p>
+                <a href="/Home/Pool" class="btn btn-gold">مشاهده و رزرو <i class="fas fa-arrow-left"></i></a>
+            </div>
+            <!-- کافه -->
+            <div class="admin-card anim-up" style="padding:36px">
+                <i class="fas fa-coffee" style="font-size:2.5rem;color:var(--gold);margin-bottom:16px"></i>
+                <h3 style="color:var(--text);font-size:1.3rem;margin-bottom:12px">کافی‌شاپ پارسیان</h3>
+                <p style="color:var(--text-muted);margin-bottom:24px;line-height:1.8">بهترین قهوه‌ها، دسرها و نوشیدنی‌های خاص در فضایی دنج.</p>
+                <a href="/Home/Cafe" class="btn btn-outline">مشاهده منو <i class="fas fa-arrow-left"></i></a>
+            </div>
+        </div>
+    </div>
+</section>

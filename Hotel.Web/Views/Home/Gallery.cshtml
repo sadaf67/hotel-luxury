@@ -1,0 +1,55 @@
+@{
+    ViewBag.Title = "گالری تصاویر";
+    var images = ViewBag.Images as List<Hotel.Domain.Entities.Gallery> ?? new();
+}
+
+<section style="padding-top:40px">
+    <div class="container">
+        <div class="section-header">
+            <h2>گالری <span>تصاویر</span></h2>
+            <div class="section-divider"><i class="fas fa-images"></i></div>
+            <p>لحظه‌های ماندگار هتل لوکس پارسیان</p>
+        </div>
+
+        <!-- فیلتر دسته‌بندی -->
+        <div class="gallery-filter">
+            <button class="cafe-tab active" onclick="filterGallery('all')">همه</button>
+            <button class="cafe-tab" onclick="filterGallery('hotel')">هتل</button>
+            <button class="cafe-tab" onclick="filterGallery('pool')">استخر</button>
+            <button class="cafe-tab" onclick="filterGallery('cafe')">کافه</button>
+            <button class="cafe-tab" onclick="filterGallery('restaurant')">رستوران</button>
+        </div>
+
+        @if (images.Any())
+        {
+            <div class="gallery-grid" id="galleryGrid">
+                @foreach (var img in images)
+                {
+                    <div class="gallery-item" data-category="@img.Category">
+                        <img src="@img.ImagePath" alt="@img.Title" loading="lazy" />
+                        <div class="gallery-overlay"><i class="fas fa-search-plus"></i></div>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div style="text-align:center;padding:80px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius)">
+                <i class="fas fa-images" style="font-size:3rem;color:var(--gold);opacity:.3;display:block;margin-bottom:16px"></i>
+                <p style="color:var(--text-muted)">تصاویر به زودی توسط مدیر بارگذاری می‌شود</p>
+            </div>
+        }
+    </div>
+</section>
+
+@section Scripts {
+<script>
+function filterGallery(cat) {
+    document.querySelectorAll('.cafe-tab').forEach(t => t.classList.remove('active'));
+    event.target.classList.add('active');
+    document.querySelectorAll('.gallery-item').forEach(item => {
+        item.style.display = (cat === 'all' || item.dataset.category === cat) ? '' : 'none';
+    });
+}
+</script>
+}

@@ -1,0 +1,81 @@
+@model Hotel.Application.DTOs.ContactMessageDto
+@{
+    ViewBag.Title = "تماس با ما";
+}
+
+<section style="padding-top:40px">
+    <div class="container">
+        <div class="section-header">
+            <h2>تماس <span>با ما</span></h2>
+            <div class="section-divider"><i class="fas fa-envelope"></i></div>
+            <p>ما آماده پاسخگویی به سوالات و راهنمایی شما هستیم</p>
+        </div>
+
+        <div class="contact-grid">
+            <!-- اطلاعات تماس -->
+            <div class="contact-info">
+                <h3>چطور می‌توانیم کمک کنیم؟</h3>
+                <div class="contact-info-item">
+                    <div class="contact-icon"><i class="fas fa-phone"></i></div>
+                    <div><h5>تلفن</h5><p>021-12345678</p></div>
+                </div>
+                <div class="contact-info-item">
+                    <div class="contact-icon"><i class="fas fa-mobile-alt"></i></div>
+                    <div><h5>موبایل</h5><p>0912-000-0000</p></div>
+                </div>
+                <div class="contact-info-item">
+                    <div class="contact-icon"><i class="fas fa-envelope"></i></div>
+                    <div><h5>ایمیل</h5><p>info@hotel.com</p></div>
+                </div>
+                <div class="contact-info-item">
+                    <div class="contact-icon"><i class="fas fa-map-marker-alt"></i></div>
+                    <div><h5>آدرس</h5><p>تهران، خیابان ولیعصر، پلاک ۱۰۰</p></div>
+                </div>
+                <div class="contact-info-item">
+                    <div class="contact-icon"><i class="fas fa-clock"></i></div>
+                    <div><h5>ساعت کاری</h5><p>۲۴ ساعته / ۷ روز هفته</p></div>
+                </div>
+            </div>
+
+            <!-- فرم تماس -->
+            <div class="reservation-box">
+                <h3 style="color:var(--gold);margin-bottom:24px;font-size:1.2rem">
+                    <i class="fas fa-paper-plane"></i> ارسال پیام
+                </h3>
+                <form asp-action="Contact" asp-controller="Home" method="post">
+                    @Html.AntiForgeryToken()
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+                        <div class="form-group">
+                            <label>نام و نام خانوادگی</label>
+                            <input asp-for="Name" class="form-control" placeholder="نام شما" />
+                            <span asp-validation-for="Name" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label>شماره موبایل</label>
+                            <input asp-for="Phone" class="form-control" placeholder="09xxxxxxxxx" dir="ltr" />
+                            <span asp-validation-for="Phone" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>ایمیل</label>
+                        <input asp-for="Email" type="email" class="form-control" placeholder="email@example.com" dir="ltr"/>
+                        <span asp-validation-for="Email" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label>موضوع</label>
+                        <input asp-for="Subject" class="form-control" placeholder="موضوع پیام" />
+                        <span asp-validation-for="Subject" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label>پیام</label>
+                        <textarea asp-for="Message" class="form-control" rows="5" placeholder="متن پیام خود را بنویسید..."></textarea>
+                        <span asp-validation-for="Message" class="text-danger"></span>
+                    </div>
+                    <button type="submit" class="btn btn-gold w-100">
+                        <i class="fas fa-paper-plane"></i> ارسال پیام
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>

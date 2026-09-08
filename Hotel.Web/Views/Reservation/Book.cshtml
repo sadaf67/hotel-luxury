@@ -1,0 +1,145 @@
+@model Hotel.Application.DTOs.CreateReservationDto
+@{
+    ViewBag.Title = "رزرو اتاق";
+    var room = ViewBag.Room as Hotel.Domain.Entities.Room;
+}
+
+<section style="padding-top:40px">
+    <div class="container">
+        <div class="section-header">
+            <h2>رزرو <span>@(room?.Name ?? "اتاق")</span></h2>
+            <div class="section-divider"><i class="fas fa-calendar-check"></i></div>
+        </div>
+
+        <div class="reservation-grid">
+            <!-- فرم رزرو -->
+            <div class="reservation-box">
+                <form asp-action="Book" method="post" id="reserveForm">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" asp-for="RoomId" />
+
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+                        <div class="form-group">
+                            <label>نام و نام خانوادگی *</label>
+                            <input asp-for="GuestName" class="form-control" placeholder="نام کامل" />
+                            <span asp-validation-for="GuestName" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label>شماره موبایل *</label>
+                            <input asp-for="GuestPhone" class="form-control" placeholder="09xxxxxxxxx" dir="ltr" />
+                            <span asp-validation-for="GuestPhone" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label>ایمیل</label>
+                            <input asp-for="GuestEmail" type="email" class="form-control" placeholder="email@example.com" dir="ltr"/>
+                            <span asp-validation-for="GuestEmail" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label>کد ملی *</label>
+                            <input asp-for="NationalCode" class="form-control" placeholder="۱۰ رقم" maxlength="10" dir="ltr"/>
+                            <span asp-validation-for="NationalCode" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label>تاریخ ورود *</label>
+                            <input asp-for="CheckIn" type="date" class="form-control" id="CheckIn" onchange="onDatesChange()" min="@DateTime.Today.ToString("yyyy-MM-dd")"/>
+                            <span asp-validation-for="CheckIn" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label>تاریخ خروج *</label>
+                            <input asp-for="CheckOut" type="date" class="form-control" id="CheckOut" onchange="onDatesChange()" />
+                            <span asp-validation-for="CheckOut" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label>تعداد مهمانان</label>
+                            <select asp-for="GuestsCount" class="form-control">
+                                @for (int i = 1; i <= (room?.Capacity ?? 4); i++)
+                                { <option value="@i">@i نفر</option> }
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>کد تخفیف</label>
+                            <div style="display:flex;gap:8px">
+                                <input asp-for="DiscountCode" class="form-control" placeholder="SUMMER30" id="DiscountCode" style="text-transform:uppercase"/>
+                                <button type="button" class="btn btn-outline btn-sm" onclick="validateDiscount()"><i class="fas fa-tag"></i></button>
+                            </div>
+                            <div id="discount-msg" style="margin-top:6px;font-size:.8rem"></div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>درخواست‌های ویژه</label>
+                        <textarea asp-for="SpecialRequests" class="form-control" rows="2" placeholder="اگر درخواست خاصی دارید..."></textarea>
+                    </div>
+
+                    <!-- نتیجه بررسی تاریخ -->
+                    <div id="availability-result" style="margin-bottom:16px"></div>
+
+                    <!-- خلاصه قیمت -->
+                    <div class="price-summary" id="price-summary-box" style="display:none">
+                        <div class="price-row"><span>قیمت هر شب</span><span>@room?.PricePerNight.ToString("N0") تومان</span></div>
+                        <div class="price-row"><span>تعداد شب</span><span id="summary-nights">—</span></div>
+                        <div class="price-row discount" id="discount-row" style="display:none"><span>تخفیف</span><span class="dval">—</span></div>
+                        <div class="price-row total"><span>جمع کل</span><span id="final-price" data-raw="0">—</span></div>
+                    </div>
+
+                    <button type="submit" class="btn btn-gold w-100 btn-lg" style="margin-top:20px">
+                        <i class="fas fa-calendar-check"></i> ثبت رزرو
+                    </button>
+                </form>
+            </div>
+
+            <!-- اطلاعات اتاق -->
+            @if (room != null)
+            {
+                <div>
+                    <div class="admin-card" style="position:sticky;top:90px">
+                        @if (!string.IsNullOrEmpty(room.MainImagePath))
+                        { <img src="@room.MainImagePath" alt="@room.Name" style="width:100%;height:200px;object-fit:cover"/> }
+                        else
+                        { <div style="height:180px;display:flex;align-items:center;justify-content:center;background:var(--bg-card2);font-size:4rem;color:var(--gold);opacity:.3"><i class="fas fa-bed"></i></div> }
+                        <div class="admin-card-body">
+                            <h3 style="color:var(--text);margin-bottom:12px">@room.Name</h3>
+                            <div class="room-meta" style="margin-bottom:16px">
+                                <span><i class="fas fa-users"></i> @room.Capacity نفر</span>
+                                <span><i class="fas fa-layer-group"></i> طبقه @room.Floor</span>
+                                @if (room.HasBalcony) { <span><i class="fas fa-wind"></i> بالکن</span> }
+                                @if (room.HasJacuzzi) { <span><i class="fas fa-hot-tub"></i> جکوزی</span> }
+                                @if (room.HasMinibar) { <span><i class="fas fa-wine-bottle"></i> مینی‌بار</span> }
+                            </div>
+                            <div class="price-row" style="justify-content:flex-start;gap:8px;font-size:1rem">
+                                <span style="color:var(--text-muted)">از</span>
+                                <span class="price-value">@room.PricePerNight.ToString("N0")</span>
+                                <span style="color:var(--text-muted)">تومان/شب</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+<script>
+const roomId = @(room?.Id ?? 0);
+const pricePerNight = @(room?.PricePerNight ?? 0);
+
+function onDatesChange() {
+    const ci = document.getElementById('CheckIn').value;
+    const co = document.getElementById('CheckOut').value;
+    if (ci && co) {
+        // محاسبه سریع بدون AJAX
+        const n = Math.round((new Date(co)-new Date(ci))/(1000*60*60*24));
+        if (n > 0) {
+            const total = n * pricePerNight;
+            document.getElementById('summary-nights').textContent = n + ' شب';
+            document.getElementById('final-price').textContent = total.toLocaleString('fa-IR') + ' تومان';
+            document.getElementById('final-price').dataset.raw = total;
+            document.getElementById('price-summary-box').style.display = '';
+        }
+        // بررسی availability
+        checkAvailability();
+    }
+}
+</script>
+}

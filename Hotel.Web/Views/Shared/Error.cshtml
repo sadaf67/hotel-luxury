@@ -1,0 +1,17 @@
+@model Hotel.Web.Models.ErrorViewModel
+@{
+    ViewData["Title"] = "خطا";
+}
+
+<div style="min-height:60vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:40px">
+    <div>
+        <i class="fas fa-exclamation-triangle" style="font-size:4rem;color:var(--gold);margin-bottom:20px"></i>
+        <h1 style="color:var(--text);margin-bottom:12px">خطایی رخ داد</h1>
+        <p style="color:var(--text-muted)">متأسفانه مشکلی در پردازش درخواست شما پیش آمد.</p>
+        @if (Model?.ShowRequestId == true)
+        {
+            <p style="color:var(--text-muted);font-size:.8rem">Request ID: <code>@Model.RequestId</code></p>
+        }
+        <a href="/" class="btn btn-gold" style="margin-top:24px"><i class="fas fa-home"></i> بازگشت به خانه</a>
+    </div>
+</div>

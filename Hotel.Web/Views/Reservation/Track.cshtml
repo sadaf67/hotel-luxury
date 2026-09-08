@@ -1,0 +1,42 @@
+@model Hotel.Application.DTOs.ReservationTrackingDto
+@{
+    ViewBag.Title = "پیگیری رزرو";
+    var reservation = ViewBag.Reservation as Hotel.Domain.Entities.Reservation;
+    string StatusLabel(Hotel.Domain.Enums.ReservationStatus status) => status switch
+    {
+        Hotel.Domain.Enums.ReservationStatus.Pending => "در انتظار تایید",
+        Hotel.Domain.Enums.ReservationStatus.Confirmed => "تایید شده",
+        Hotel.Domain.Enums.ReservationStatus.CheckedIn => "مهمان هتل",
+        Hotel.Domain.Enums.ReservationStatus.CheckedOut => "پایان اقامت",
+        _ => "لغو شده"
+    };
+}
+
+<section class="track-hero">
+    <div class="container track-shell">
+        <div class="track-copy">
+            <span class="eyebrow">دسترسی امن به رزرو</span>
+            <h1>سفر شما، همیشه <span>در دسترس</span></h1>
+            <p>کد پیگیری و شماره موبایلی که هنگام رزرو ثبت کرده‌اید را وارد کنید.</p>
+            <div class="track-trust"><span><i class="fas fa-shield-alt"></i> اطلاعات رمزنگاری‌شده</span><span><i class="fas fa-headset"></i> پشتیبانی ۲۴ ساعته</span></div>
+        </div>
+        <div class="track-card">
+            <form method="post" asp-action="Track">
+                @Html.AntiForgeryToken()
+                <div asp-validation-summary="ModelOnly" class="text-danger validation-summary"></div>
+                <div class="form-group"><label asp-for="TrackingCode">کد پیگیری</label><input asp-for="TrackingCode" class="form-control track-code" placeholder="HTL..." dir="ltr" autocomplete="off"/><span asp-validation-for="TrackingCode" class="text-danger"></span></div>
+                <div class="form-group"><label asp-for="Phone">شماره موبایل</label><input asp-for="Phone" class="form-control" placeholder="09xxxxxxxxx" dir="ltr" inputmode="numeric"/><span asp-validation-for="Phone" class="text-danger"></span></div>
+                <button class="btn btn-gold btn-lg w-100"><i class="fas fa-search"></i> مشاهده وضعیت رزرو</button>
+            </form>
+        </div>
+    </div>
+</section>
+
+@if (reservation != null)
+{
+    <section class="track-result-section"><div class="container"><article class="track-result">
+        <div class="track-result-head"><div><span class="eyebrow">نتیجه استعلام</span><h2>@reservation.Room?.Name</h2><code>@reservation.TrackingCode</code></div><span class="reservation-state state-@reservation.Status.ToString().ToLowerInvariant()">@StatusLabel(reservation.Status)</span></div>
+        <div class="stay-timeline"><div><i class="fas fa-sign-in-alt"></i><span>ورود</span><strong>@reservation.CheckIn.ToString("yyyy/MM/dd")</strong></div><span class="timeline-line"></span><div><i class="fas fa-moon"></i><span>مدت اقامت</span><strong>@((reservation.CheckOut-reservation.CheckIn).Days) شب</strong></div><span class="timeline-line"></span><div><i class="fas fa-sign-out-alt"></i><span>خروج</span><strong>@reservation.CheckOut.ToString("yyyy/MM/dd")</strong></div></div>
+        <div class="track-finance"><span>مبلغ نهایی</span><strong>@reservation.FinalPrice.ToString("N0") تومان</strong><span class="badge @(reservation.PaymentStatus==Hotel.Domain.Enums.PaymentStatus.Paid?"badge-success":"badge-warning")">@(reservation.PaymentStatus==Hotel.Domain.Enums.PaymentStatus.Paid?"پرداخت شده":"پرداخت نشده")</span></div>
+    </article></div></section>
+}

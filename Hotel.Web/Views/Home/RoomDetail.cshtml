@@ -1,0 +1,14 @@
+@model Hotel.Domain.Entities.Room
+@{ ViewBag.Title = Model.Name; }
+<section class="room-detail-hero">
+    @if (!string.IsNullOrWhiteSpace(Model.MainImagePath)) { <img src="@Model.MainImagePath" alt="@Model.Name" /> } else { <div class="room-detail-fallback"></div> }
+    <div class="room-detail-overlay"><div class="container"><span class="eyebrow">@Model.RoomType · اتاق @Model.RoomNumber</span><h1>@Model.Name</h1><p>آرامش، حریم خصوصی و جزئیاتی که برای یک اقامت بی‌نقص طراحی شده‌اند.</p></div></div>
+</section>
+<section><div class="container detail-layout">
+    <div>
+        <div class="detail-kicker">معرفی اتاق</div><h2 class="detail-title">فضایی برای مکث و آرامش</h2><p class="detail-description">@Model.Description</p>
+        <div class="amenities-grid"><div><i class="fas fa-user-friends"></i><b>@Model.Capacity مهمان</b><small>ظرفیت استاندارد</small></div><div><i class="fas fa-layer-group"></i><b>طبقه @Model.Floor</b><small>دسترسی آسان</small></div><div><i class="fas fa-wifi"></i><b>اینترنت پرسرعت</b><small>رایگان و نامحدود</small></div><div><i class="fas fa-concierge-bell"></i><b>سرویس اتاق</b><small>۲۴ ساعته</small></div>@if(Model.HasBalcony){<div><i class="fas fa-wind"></i><b>بالکن اختصاصی</b><small>چشم‌انداز شهری</small></div>}@if(Model.HasJacuzzi){<div><i class="fas fa-hot-tub"></i><b>جکوزی</b><small>آرامش اختصاصی</small></div>}@if(Model.HasMinibar){<div><i class="fas fa-glass-martini-alt"></i><b>مینی‌بار</b><small>شارژ روزانه</small></div>}</div>
+        @if(Model.Images.Any()){<div class="detail-gallery">@foreach(var image in Model.Images.OrderBy(x=>x.SortOrder)){<button class="gallery-item" type="button"><img src="@image.ImagePath" alt="@(image.AltText ?? Model.Name)" loading="lazy" /></button>}</div>}
+    </div>
+    <aside class="booking-card"><span class="eyebrow">رزرو مستقیم</span><div class="booking-price"><strong>@Model.PricePerNight.ToString("N0")</strong><span>تومان / هر شب</span></div><ul><li><i class="fas fa-check"></i> تضمین بهترین قیمت</li><li><i class="fas fa-check"></i> تایید سریع رزرو</li><li><i class="fas fa-check"></i> پشتیبانی ۲۴ ساعته</li></ul><a href="/Reservation/Book?roomId=@Model.Id" class="btn btn-gold btn-lg booking-cta">انتخاب تاریخ و رزرو <i class="fas fa-arrow-left"></i></a><small>در این مرحله مبلغی پرداخت نمی‌کنید.</small></aside>
+</div></section>

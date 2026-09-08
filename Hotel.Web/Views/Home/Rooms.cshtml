@@ -1,0 +1,48 @@
+@using Hotel.Domain.Enums
+@{
+    ViewBag.Title = "اتاق‌ها و سوئیت‌ها";
+    var rooms = ViewBag.Rooms as List<Hotel.Domain.Entities.Room> ?? new();
+}
+
+<section class="page-hero rooms-page-hero">
+    <div class="container page-hero-content">
+        <span class="eyebrow">اقامتی فراتر از انتظار</span>
+        <h1>اتاق‌ها و <span>سوئیت‌های اختصاصی</span></h1>
+        <p>فضاهایی آرام با طراحی معاصر، امکانات کامل و سرویس حرفه‌ای</p>
+    </div>
+</section>
+
+<section class="section-compact">
+    <div class="container">
+        <form method="get" class="filter-panel">
+            <div class="filter-field"><label>نوع اتاق</label><select name="type" class="form-control"><option value="">همه اتاق‌ها</option>@foreach (var type in Enum.GetValues<RoomType>()) { <option value="@type" selected="@(Context.Request.Query["type"] == type.ToString())">@type</option> }</select></div>
+            <div class="filter-field"><label>ورود</label><input type="date" name="checkIn" min="@DateTime.Today.ToString("yyyy-MM-dd")" value="@Context.Request.Query["checkIn"]" class="form-control" /></div>
+            <div class="filter-field"><label>خروج</label><input type="date" name="checkOut" min="@DateTime.Today.AddDays(1).ToString("yyyy-MM-dd")" value="@Context.Request.Query["checkOut"]" class="form-control" /></div>
+            <div class="filter-field"><label>مهمان</label><input type="number" name="guests" min="1" max="10" value="@Context.Request.Query["guests"]" class="form-control" placeholder="۲" /></div>
+            <div class="filter-field"><label>حداکثر قیمت</label><input type="number" name="maxPrice" min="0" value="@Context.Request.Query["maxPrice"]" class="form-control" placeholder="تومان" /></div>
+            <button class="btn btn-gold" type="submit"><i class="fas fa-sliders-h"></i> اعمال فیلتر</button>
+            <a href="/Home/Rooms" class="btn btn-dark">پاک کردن</a>
+        </form>
+
+        <div class="results-head"><div><span class="eyebrow">انتخاب شما</span><h2>@rooms.Count گزینه برای اقامت</h2></div><p>قیمت‌ها برای هر شب و بدون خدمات انتخابی است.</p></div>
+        <div class="rooms-grid">
+            @foreach (var room in rooms)
+            {
+                <article class="room-card anim-up">
+                    <a class="room-img" href="/Home/RoomDetail/@room.Id">
+                        @if (!string.IsNullOrWhiteSpace(room.MainImagePath)) { <img src="@room.MainImagePath" alt="@room.Name" loading="lazy" /> }
+                        else { <div class="room-placeholder room-placeholder-lux"><i class="fas fa-bed"></i><span>@room.Name</span></div> }
+                        <span class="room-badge">@room.RoomType</span>
+                    </a>
+                    <div class="room-body">
+                        <div class="room-title-row"><h3 class="room-title">@room.Name</h3><span class="room-number">اتاق @room.RoomNumber</span></div>
+                        <div class="room-meta"><span><i class="fas fa-user-friends"></i> @room.Capacity نفر</span><span><i class="fas fa-layer-group"></i> طبقه @room.Floor</span>@if(room.HasJacuzzi){<span><i class="fas fa-hot-tub"></i> جکوزی</span>}@if(room.HasBalcony){<span><i class="fas fa-wind"></i> بالکن</span>}</div>
+                        <p class="room-desc">@room.Description</p>
+                        <div class="room-footer"><div><span class="price-value">@room.PricePerNight.ToString("N0")</span><span class="price-unit"> تومان / شب</span></div><div class="room-actions"><a href="/Home/RoomDetail/@room.Id" class="text-link">جزئیات</a><a href="/Reservation/Book?roomId=@room.Id&checkIn=@Context.Request.Query["checkIn"]&checkOut=@Context.Request.Query["checkOut"]&guests=@Context.Request.Query["guests"]" class="btn btn-gold btn-sm">رزرو</a></div></div>
+                    </div>
+                </article>
+            }
+        </div>
+        @if (!rooms.Any()) { <div class="empty-state"><i class="fas fa-search"></i><h3>اتاقی با این فیلتر پیدا نشد</h3><p>فیلترها را تغییر دهید یا با پذیرش تماس بگیرید.</p><a href="/Home/Rooms" class="btn btn-gold">نمایش همه اتاق‌ها</a></div> }
+    </div>
+</section>

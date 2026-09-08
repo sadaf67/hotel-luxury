@@ -1,0 +1,9 @@
+@model Hotel.Domain.Entities.Room
+<div asp-validation-summary="ModelOnly" class="text-danger"></div><div class="admin-form-grid">
+<div class="form-group"><label>شماره اتاق</label><input asp-for="RoomNumber" class="form-control" required/></div><div class="form-group"><label>نام نمایشی</label><input asp-for="Name" class="form-control" required/></div>
+<div class="form-group"><label>نوع</label><select asp-for="RoomType" asp-items="Html.GetEnumSelectList<Hotel.Domain.Enums.RoomType>()" class="form-control"></select></div><div class="form-group"><label>وضعیت</label><select asp-for="Status" asp-items="Html.GetEnumSelectList<Hotel.Domain.Enums.RoomStatus>()" class="form-control"></select></div>
+<div class="form-group"><label>ظرفیت</label><input asp-for="Capacity" type="number" min="1" max="10" class="form-control"/></div><div class="form-group"><label>طبقه</label><input asp-for="Floor" type="number" min="0" class="form-control"/></div>
+<div class="form-group"><label>قیمت هر شب (تومان)</label><input asp-for="PricePerNight" type="number" min="0" class="form-control"/></div><div class="form-group"><label>تصویر اصلی</label><input type="file" name="mainImage" accept=".jpg,.jpeg,.png,.webp" class="form-control"/></div>
+<div class="form-group admin-full"><label>توضیحات</label><textarea asp-for="Description" rows="4" class="form-control"></textarea></div>
+<div class="admin-full form-checks"><label><input asp-for="HasBalcony"/> بالکن</label><label><input asp-for="HasJacuzzi"/> جکوزی</label><label><input asp-for="HasMinibar"/> مینی‌بار</label></div>
+</div>

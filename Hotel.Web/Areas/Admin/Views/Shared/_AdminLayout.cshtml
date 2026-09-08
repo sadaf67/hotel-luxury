@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl" data-theme="dark">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@(ViewBag.Title ?? "پنل مدیریت") | هتل پارسیان</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    @await RenderSectionAsync("Styles", required: false)
+    <script>
+        (function(){
+            var t=localStorage.getItem('hotelTheme')||'dark';
+            document.documentElement.setAttribute('data-theme',t);
+        })();
+    </script>
+</head>
+<body class="admin-body">
+
+<div class="admin-wrapper">
+
+    <!-- ===== SIDEBAR ===== -->
+    <aside class="admin-sidebar" id="adminSidebar">
+        <div class="sidebar-brand">
+            <h2><i class="fas fa-hotel" style="color:var(--gold);margin-left:8px"></i> پنل مدیریت</h2>
+            <p>هتل لوکس پارسیان</p>
+        </div>
+
+        <nav class="sidebar-nav">
+            <div class="sidebar-section">داشبورد</div>
+            <a href="/Admin/Dashboard" class="sidebar-link @(ViewBag.Active=="dashboard"?"active":"")">
+                <i class="fas fa-chart-line"></i> داشبورد
+            </a>
+
+            <div class="sidebar-section">مدیریت هتل</div>
+            <a href="/Admin/Rooms" class="sidebar-link @(ViewBag.Active=="rooms"?"active":"")">
+                <i class="fas fa-bed"></i> اتاق‌ها
+            </a>
+            <a href="/Admin/Reservations" class="sidebar-link @(ViewBag.Active=="reservations"?"active":"")">
+                <i class="fas fa-calendar-check"></i> رزروها
+                @if (ViewBag.PendingCount != null && (int)ViewBag.PendingCount > 0)
+                {
+                    <span class="sidebar-badge">@ViewBag.PendingCount</span>
+                }
+            </a>
+            <a href="/Admin/Messages" class="sidebar-link @(ViewBag.Active=="messages"?"active":"")">
+                <i class="fas fa-inbox"></i> پیام‌های مهمانان
+            </a>
+            <a href="/Admin/Pool" class="sidebar-link @(ViewBag.Active=="pool"?"active":"")">
+                <i class="fas fa-swimming-pool"></i> استخر
+            </a>
+            <a href="/Admin/Cafe" class="sidebar-link @(ViewBag.Active=="cafe"?"active":"")">
+                <i class="fas fa-coffee"></i> کافی‌شاپ
+            </a>
+
+            <div class="sidebar-section">بازاریابی</div>
+            <a href="/Admin/Discounts" class="sidebar-link @(ViewBag.Active=="discounts"?"active":"")">
+                <i class="fas fa-tags"></i> کدهای تخفیف
+            </a>
+            <a href="/Admin/Sms" class="sidebar-link @(ViewBag.Active=="sms"?"active":"")">
+                <i class="fas fa-sms"></i> پنل پیامک
+            </a>
+
+            <div class="sidebar-section">تنظیمات</div>
+            <a href="/Admin/Settings" class="sidebar-link @(ViewBag.Active=="settings"?"active":"")">
+                <i class="fas fa-cog"></i> تنظیمات سایت
+            </a>
+            <a href="/Admin/Settings/Sliders" class="sidebar-link @(ViewBag.Active=="sliders"?"active":"")">
+                <i class="fas fa-images"></i> اسلایدر
+            </a>
+            <a href="/Admin/Settings/Gallery" class="sidebar-link @(ViewBag.Active=="gallery"?"active":"")">
+                <i class="fas fa-photo-video"></i> گالری
+            </a>
+
+            <div class="sidebar-section">سیستم</div>
+            <a href="/" class="sidebar-link" target="_blank">
+                <i class="fas fa-external-link-alt"></i> مشاهده سایت
+            </a>
+            <form action="/Admin/Account/Logout" method="post">
+                @Html.AntiForgeryToken()
+                <button type="submit" class="sidebar-link" style="width:100%;border:0;background:transparent;text-align:right;cursor:pointer">
+                    <i class="fas fa-sign-out-alt"></i> خروج
+                </button>
+            </form>
+        </nav>
+    </aside>
+
+    <!-- ===== MAIN ===== -->
+    <div class="admin-main">
+
+        <!-- Topbar -->
+        <header class="admin-topbar">
+            <div class="topbar-title">
+                <button onclick="toggleAdminSidebar()" class="btn-icon btn-dark" style="display:none" id="sidebarToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <i class="fas fa-hotel"></i>
+                <span>@(ViewBag.Title ?? "داشبورد")</span>
+            </div>
+            <div class="topbar-actions">
+                <!-- سوئیچر تم -->
+                <button class="theme-toggle" onclick="toggleTheme()" title="تغییر تم">
+                    <i class="fas fa-sun"></i>
+                </button>
+                <!-- سوئیچر زبان -->
+                <div class="lang-switcher">
+                    <button class="lang-btn active" data-lang="fa" onclick="switchLanguage('fa')">FA</button>
+                    <button class="lang-btn"        data-lang="en" onclick="switchLanguage('en')">EN</button>
+                </div>
+                <!-- اطلاعات ادمین -->
+                <span style="color:var(--text-muted);font-size:.82rem">
+                    <i class="fas fa-user-shield" style="color:var(--gold)"></i>
+                    @User.Identity?.Name
+                </span>
+            </div>
+        </header>
+
+        <!-- Flash Messages -->
+        @if (TempData["Success"] != null)
+        {
+            <div class="alert-toast success" id="alert-toast">
+                <i class="fas fa-check-circle"></i> @TempData["Success"]
+            </div>
+        }
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert-toast error" id="alert-toast">
+                <i class="fas fa-times-circle"></i> @TempData["Error"]
+            </div>
+        }
+
+        <!-- Content -->
+        <main class="admin-content">
+            @RenderBody()
+        </main>
+
+    </div>
+</div>
+
+<script src="~/js/site.js" asp-append-version="true"></script>
+<script>
+    // نمایش toggle در موبایل
+    if (window.innerWidth < 1024) {
+        document.getElementById('sidebarToggle').style.display = 'flex';
+    }
+</script>
+@await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

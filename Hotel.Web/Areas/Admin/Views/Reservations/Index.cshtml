@@ -1,0 +1,118 @@
+@{
+    ViewBag.Title  = "مدیریت رزروها";
+    ViewBag.Active = "reservations";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+    var list = ViewBag.Reservations as List<Hotel.Domain.Entities.Reservation> ?? new();
+}
+@Html.AntiForgeryToken()
+
+<div class="admin-table-wrap">
+    <div class="table-toolbar">
+        <h3><i class="fas fa-calendar-check"></i> لیست رزروها (@list.Count)</h3>
+        <div class="table-search">
+            <form method="get">
+                <div style="display:flex;gap:8px;flex-wrap:wrap">
+                    <input name="search" class="form-control" placeholder="نام، موبایل یا کد پیگیری..." value="@Context.Request.Query["search"]" />
+                    <select name="status" class="form-control" style="width:160px">
+                        <option value="">همه وضعیت‌ها</option>
+                        <option value="0">در انتظار</option>
+                        <option value="1">تایید شده</option>
+                        <option value="2">چک‌این</option>
+                        <option value="3">چک‌اوت</option>
+                        <option value="4">لغو شده</option>
+                    </select>
+                    <button class="btn btn-gold btn-sm" type="submit"><i class="fas fa-search"></i> جستجو</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div style="overflow-x:auto">
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>کد پیگیری</th>
+                    <th>مهمان</th>
+                    <th>موبایل</th>
+                    <th>اتاق</th>
+                    <th>ورود</th>
+                    <th>خروج</th>
+                    <th>مبلغ نهایی</th>
+                    <th>وضعیت</th>
+                    <th>پرداخت</th>
+                    <th>عملیات</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var r in list)
+                {
+                    <tr>
+                        <td><code style="color:var(--gold);font-size:.78rem">@r.TrackingCode</code></td>
+                        <td>@r.GuestName</td>
+                        <td style="direction:ltr">@r.GuestPhone</td>
+                        <td>@r.Room?.RoomNumber</td>
+                        <td>@r.CheckIn.ToString("yy/MM/dd")</td>
+                        <td>@r.CheckOut.ToString("yy/MM/dd")</td>
+                        <td style="color:var(--gold);font-weight:600">@r.FinalPrice.ToString("N0")</td>
+                        <td>
+                            @{
+                                var (sc, sl) = r.Status switch {
+                                    Hotel.Domain.Enums.ReservationStatus.Pending   => ("badge-warning",  "در انتظار"),
+                                    Hotel.Domain.Enums.ReservationStatus.Confirmed => ("badge-info",     "تایید شده"),
+                                    Hotel.Domain.Enums.ReservationStatus.CheckedIn => ("badge-success",  "چک‌این"),
+                                    Hotel.Domain.Enums.ReservationStatus.CheckedOut=> ("badge-secondary","چک‌اوت"),
+                                    _                                               => ("badge-danger",   "لغو شده")
+                                };
+                            }
+                            <span class="badge @sc">@sl</span>
+                        </td>
+                        <td>
+                            <span class="badge @(r.PaymentStatus == Hotel.Domain.Enums.PaymentStatus.Paid ? "badge-success" : "badge-warning")">
+                                @(r.PaymentStatus == Hotel.Domain.Enums.PaymentStatus.Paid ? "پرداخت شده" : "پرداخت نشده")
+                            </span>
+                        </td>
+                        <td>
+                            <div style="display:flex;gap:6px">
+                                <a href="/Admin/Reservations/Detail/@r.Id" class="btn btn-dark btn-sm" title="جزئیات">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                @if (r.Status == Hotel.Domain.Enums.ReservationStatus.Pending)
+                                {
+                                    <button onclick="updateStatus(@r.Id,1,'@Context.Request.Form["__RequestVerificationToken"]')"
+                                            class="btn btn-sm" style="background:rgba(46,204,113,.15);color:#2ecc71;border:1px solid #2ecc71" title="تایید">
+                                        <i class="fas fa-check"></i>
+                                    </button>
+                                }
+                                @if (r.Status != Hotel.Domain.Enums.ReservationStatus.Cancelled)
+                                {
+                                    <button onclick="updateStatus(@r.Id,4,'@Context.Request.Form["__RequestVerificationToken"]')"
+                                            class="btn btn-sm" style="background:rgba(231,76,60,.1);color:#e74c3c;border:1px solid #e74c3c" title="لغو">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                }
+                            </div>
+                        </td>
+                    </tr>
+                }
+                @if (!list.Any())
+                {
+                    <tr><td colspan="10" style="text-align:center;padding:40px;color:var(--text-muted)">رزروی یافت نشد</td></tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+function updateStatus(id, status, token) {
+    const labels = {1:'تایید',2:'چک‌این',3:'چک‌اوت',4:'لغو'};
+    if (!confirm(`رزرو ${labels[status] || ''} شود؟`)) return;
+    fetch('/Admin/Reservations/UpdateStatus', {
+        method: 'POST',
+        headers: {'Content-Type':'application/x-www-form-urlencoded'},
+        body: `id=${id}&status=${status}&__RequestVerificationToken=${encodeURIComponent(document.querySelector('[name=__RequestVerificationToken]')?.value||'')}`
+    }).then(r=>r.json()).then(d=>{ if(d.success) location.reload(); else alert('خطا'); });
+}
+</script>
+}

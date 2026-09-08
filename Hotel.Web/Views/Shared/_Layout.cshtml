@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl" data-theme="dark">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@(ViewBag.Title != null ? ViewBag.Title + " | " : "")هتل لوکس پارسیان</title>
+    <meta name="description" content="هتل لوکس پارسیان - رزرو آنلاین اتاق، استخر و کافی‌شاپ" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    @await RenderSectionAsync("Styles", required: false)
+    <script>
+        /* اعمال تم قبل از رندر برای جلوگیری از فلش */
+        (function(){
+            var t=localStorage.getItem('hotelTheme')||'dark';
+            document.documentElement.setAttribute('data-theme',t);
+            var l=localStorage.getItem('hotelLang')||'fa';
+            document.documentElement.setAttribute('lang',l);
+            document.documentElement.setAttribute('dir',l==='en'?'ltr':'rtl');
+        })();
+    </script>
+</head>
+<body>
+
+<!-- ===== NAVBAR ===== -->
+<nav class="navbar" id="navbar">
+    <div class="container nav-container">
+        <!-- برند -->
+        <a class="navbar-brand" href="/">
+            <span class="brand-icon"><i class="fas fa-hotel"></i></span>
+            <span class="brand-text">هتل پارسیان</span>
+        </a>
+
+        <!-- لینک‌های دسکتاپ -->
+        <ul class="nav-links" id="navLinksDesktop">
+            <li><a href="/"                class="nav-link" data-i18n="nav_home">خانه</a></li>
+            <li><a href="/Home/Rooms"      class="nav-link" data-i18n="nav_rooms">اتاق‌ها</a></li>
+            <li><a href="/Home/Pool"       class="nav-link" data-i18n="nav_pool">استخر</a></li>
+            <li><a href="/Home/Cafe"       class="nav-link" data-i18n="nav_cafe">کافی‌شاپ</a></li>
+            <li><a href="/Home/Gallery"    class="nav-link" data-i18n="nav_gallery">گالری</a></li>
+            <li><a href="/Home/Contact"    class="nav-link" data-i18n="nav_contact">تماس</a></li>
+            <li><a href="/Reservation/Track" class="nav-link">پیگیری رزرو</a></li>
+        </ul>
+
+        <!-- سمت راست ناوبار -->
+        <div class="nav-right">
+            <!-- سوئیچر زبان -->
+            <div class="lang-switcher" aria-label="Language switcher">
+                <button class="lang-btn active" data-lang="fa" onclick="switchLanguage('fa')">FA</button>
+                <button class="lang-btn"        data-lang="en" onclick="switchLanguage('en')">EN</button>
+            </div>
+            <!-- سوئیچر تم -->
+            <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+                <i class="fas fa-sun"></i>
+            </button>
+            <!-- دکمه رزرو -->
+            <a href="/Home/Rooms" class="btn-reserve" data-i18n="nav_reserve">رزرو کنید</a>
+            <!-- همبرگر موبایل -->
+            <button class="nav-toggle" id="navToggle" aria-label="منو">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+    </div>
+</nav>
+
+<!-- ===== MOBILE DRAWER ===== -->
+<div class="nav-overlay" id="navOverlay"></div>
+<nav class="nav-drawer" id="navDrawer">
+    <a href="/"             class="nav-drawer-link" data-i18n="nav_home">خانه</a>
+    <a href="/Home/Rooms"   class="nav-drawer-link" data-i18n="nav_rooms">اتاق‌ها</a>
+    <a href="/Home/Pool"    class="nav-drawer-link" data-i18n="nav_pool">استخر</a>
+    <a href="/Home/Cafe"    class="nav-drawer-link" data-i18n="nav_cafe">کافی‌شاپ</a>
+    <a href="/Home/Gallery" class="nav-drawer-link" data-i18n="nav_gallery">گالری</a>
+    <a href="/Home/Contact" class="nav-drawer-link" data-i18n="nav_contact">تماس با ما</a>
+    <a href="/Reservation/Track" class="nav-drawer-link">پیگیری رزرو</a>
+    <a href="/Home/Rooms"   class="nav-drawer-link btn-gold mt-16" style="text-align:center;" data-i18n="nav_reserve">رزرو کنید</a>
+    <div style="display:flex;gap:10px;margin-top:20px;align-items:center">
+        <div class="lang-switcher">
+            <button class="lang-btn active" data-lang="fa" onclick="switchLanguage('fa')">FA</button>
+            <button class="lang-btn"        data-lang="en" onclick="switchLanguage('en')">EN</button>
+        </div>
+        <button class="theme-toggle" onclick="toggleTheme()"><i class="fas fa-sun"></i></button>
+    </div>
+</nav>
+
+<!-- ===== FLASH MESSAGES ===== -->
+@if (TempData["Success"] != null)
+{
+    <div class="alert-toast success" id="alert-toast">
+        <i class="fas fa-check-circle"></i> @TempData["Success"]
+    </div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert-toast error" id="alert-toast">
+        <i class="fas fa-times-circle"></i> @TempData["Error"]
+    </div>
+}
+
+<!-- ===== MAIN ===== -->
+<main style="padding-top:70px">
+    @RenderBody()
+</main>
+
+<!-- ===== FOOTER ===== -->
+<footer class="footer">
+    <div class="container">
+        <div class="footer-grid">
+            <div class="footer-col">
+                <h3>هتل لوکس پارسیان</h3>
+                <p class="footer-desc">تجربه‌ای بی‌نظیر از اقامت لوکس در قلب شهر. ما متعهد به ارائه بالاترین کیفیت خدمات هستیم.</p>
+                <div class="social-links">
+                    <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                    <a href="#" aria-label="Telegram"><i class="fab fa-telegram"></i></a>
+                    <a href="#" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+                    <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                </div>
+            </div>
+            <div class="footer-col">
+                <h4>دسترسی سریع</h4>
+                <ul class="footer-links-list">
+                    <li><a href="/Home/Rooms"><i class="fas fa-chevron-left"></i> اتاق‌ها و سوئیت‌ها</a></li>
+                    <li><a href="/Home/Pool"><i class="fas fa-chevron-left"></i> استخر</a></li>
+                    <li><a href="/Home/Cafe"><i class="fas fa-chevron-left"></i> کافی‌شاپ</a></li>
+                    <li><a href="/Home/Gallery"><i class="fas fa-chevron-left"></i> گالری تصاویر</a></li>
+                    <li><a href="/Home/Contact"><i class="fas fa-chevron-left"></i> تماس با ما</a></li>
+                    <li><a href="/Reservation/Track"><i class="fas fa-chevron-left"></i> پیگیری رزرو</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>اطلاعات تماس</h4>
+                <ul class="footer-contact-list">
+                    <li><i class="fas fa-phone"></i> 021-12345678</li>
+                    <li><i class="fas fa-mobile-alt"></i> 0912-000-0000</li>
+                    <li><i class="fas fa-envelope"></i> info@hotel.com</li>
+                    <li><i class="fas fa-map-marker-alt"></i> تهران، خیابان ولیعصر</li>
+                    <li><i class="fas fa-clock"></i> ۲۴ ساعته / ۷ روز هفته</li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>© @DateTime.Now.Year هتل لوکس پارسیان — تمامی حقوق محفوظ است</p>
+            <a href="/Admin/Account/Login" class="admin-link"><i class="fas fa-lock"></i> پنل مدیریت</a>
+        </div>
+    </div>
+</footer>
+
+<!-- ===== LIGHTBOX ===== -->
+<div class="lightbox" id="lightbox">
+    <button class="lightbox-close" id="lightboxClose"><i class="fas fa-times"></i></button>
+    <img id="lightboxImg" src="" alt="gallery" />
+</div>
+
+<script src="~/js/site.js" asp-append-version="true"></script>
+@await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

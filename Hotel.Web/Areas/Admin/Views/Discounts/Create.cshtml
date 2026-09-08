@@ -1,0 +1,85 @@
+@model Hotel.Domain.Entities.Discount
+@{
+    ViewBag.Title  = "کد تخفیف جدید";
+    ViewBag.Active = "discounts";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="admin-card" style="max-width:700px">
+    <div class="admin-card-header">
+        <h3><i class="fas fa-plus-circle"></i> ایجاد کد تخفیف جدید</h3>
+        <a href="/Admin/Discounts" class="btn btn-dark btn-sm"><i class="fas fa-arrow-right"></i> بازگشت</a>
+    </div>
+    <div class="admin-card-body">
+        <form asp-action="Create" method="post">
+            @Html.AntiForgeryToken()
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+                <div class="form-group">
+                    <label>کد تخفیف *</label>
+                    <input asp-for="Code" class="form-control" placeholder="مثال: SUMMER30" style="text-transform:uppercase"/>
+                    <span asp-validation-for="Code" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label>عنوان *</label>
+                    <input asp-for="Title" class="form-control" placeholder="مثال: تخفیف تابستانه" />
+                    <span asp-validation-for="Title" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label>نوع تخفیف</label>
+                    <select asp-for="Type" class="form-control" id="typeSelect" onchange="updateLabel()">
+                        <option value="0">درصدی</option>
+                        <option value="1">مبلغ ثابت (تومان)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label id="valueLabel">مقدار تخفیف (٪) *</label>
+                    <input asp-for="Value" class="form-control" type="number" min="0" step="0.01" />
+                    <span asp-validation-for="Value" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label>حداقل مبلغ خرید (تومان)</label>
+                    <input asp-for="MinimumAmount" class="form-control" type="number" min="0" placeholder="اختیاری" />
+                </div>
+                <div class="form-group">
+                    <label>حداکثر تخفیف (تومان)</label>
+                    <input asp-for="MaximumDiscount" class="form-control" type="number" min="0" placeholder="اختیاری" />
+                </div>
+                <div class="form-group">
+                    <label>تاریخ شروع</label>
+                    <input asp-for="StartDate" class="form-control" type="date" />
+                </div>
+                <div class="form-group">
+                    <label>تاریخ انقضا</label>
+                    <input asp-for="EndDate" class="form-control" type="date" />
+                </div>
+                <div class="form-group">
+                    <label>حداکثر تعداد استفاده</label>
+                    <input asp-for="MaxUsageCount" class="form-control" type="number" min="1" placeholder="اختیاری — بدون محدودیت" />
+                </div>
+                <div class="form-group" style="display:flex;align-items:center;gap:12px;padding-top:28px">
+                    <label style="display:flex;align-items:center;gap:8px;cursor:pointer;margin:0">
+                        <input asp-for="IsActive" type="checkbox" checked style="width:18px;height:18px;accent-color:var(--gold)" />
+                        <span>فعال باشد</span>
+                    </label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>توضیحات</label>
+                <textarea asp-for="Description" class="form-control" rows="2" placeholder="توضیح برای تیم (اختیاری)"></textarea>
+            </div>
+            <div style="display:flex;gap:12px;margin-top:8px">
+                <button type="submit" class="btn btn-gold"><i class="fas fa-save"></i> ذخیره کد تخفیف</button>
+                <a href="/Admin/Discounts" class="btn btn-dark">انصراف</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+function updateLabel(){
+    const t = document.getElementById('typeSelect').value;
+    document.getElementById('valueLabel').textContent = t=='0' ? 'مقدار تخفیف (٪) *' : 'مبلغ تخفیف (تومان) *';
+}
+</script>
+}

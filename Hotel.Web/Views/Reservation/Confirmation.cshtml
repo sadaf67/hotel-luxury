@@ -1,0 +1,34 @@
+@model Hotel.Domain.Entities.Reservation
+@{
+    ViewBag.Title = "تایید رزرو";
+}
+
+<section style="padding-top:40px">
+    <div class="container" style="max-width:680px">
+        <div class="reservation-box" style="text-align:center">
+            <div style="font-size:4rem;color:#2ecc71;margin-bottom:16px">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <h2 style="color:var(--text);margin-bottom:8px">رزرو شما ثبت شد!</h2>
+            <p style="color:var(--text-muted);margin-bottom:32px">پیامک تایید به شماره @Model.GuestPhone ارسال گردید.</p>
+
+            <div style="background:rgba(212,175,55,.08);border:1px solid var(--border);border-radius:var(--radius-sm);padding:24px;text-align:right;margin-bottom:28px">
+                <div class="price-row"><span>کد پیگیری</span><code style="color:var(--gold);font-size:1.1rem;font-weight:700">@Model.TrackingCode</code></div>
+                <div class="price-row"><span>اتاق</span><span>@Model.Room?.Name</span></div>
+                <div class="price-row"><span>تاریخ ورود</span><span>@Model.CheckIn.ToString("yyyy/MM/dd")</span></div>
+                <div class="price-row"><span>تاریخ خروج</span><span>@Model.CheckOut.ToString("yyyy/MM/dd")</span></div>
+                <div class="price-row"><span>تعداد مهمان</span><span>@Model.GuestsCount نفر</span></div>
+                @if (Model.DiscountAmount > 0)
+                {
+                    <div class="price-row discount"><span>تخفیف</span><span>@Model.DiscountAmount.ToString("N0") تومان</span></div>
+                }
+                <div class="price-row total"><span>مبلغ قابل پرداخت</span><span>@Model.FinalPrice.ToString("N0") تومان</span></div>
+            </div>
+
+            <div style="display:flex;gap:12px;justify-content:center">
+                <a href="/" class="btn btn-outline"><i class="fas fa-home"></i> صفحه اصلی</a>
+                <button onclick="window.print()" class="btn btn-gold"><i class="fas fa-print"></i> چاپ</button>
+            </div>
+        </div>
+    </div>
+</section>

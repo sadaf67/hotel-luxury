@@ -1,0 +1,98 @@
+@{
+    ViewBag.Title  = "کدهای تخفیف";
+    ViewBag.Active = "discounts";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+    var list = Model as IEnumerable<Hotel.Domain.Entities.Discount> ?? new List<Hotel.Domain.Entities.Discount>();
+}
+
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;flex-wrap:wrap;gap:12px">
+    <h2 style="color:var(--text);font-size:1.1rem">
+        <i class="fas fa-tags" style="color:var(--gold)"></i> کدهای تخفیف
+    </h2>
+    <a href="/Admin/Discounts/Create" class="btn btn-gold">
+        <i class="fas fa-plus"></i> کد جدید
+    </a>
+</div>
+
+<div class="admin-table-wrap">
+    <div style="overflow-x:auto">
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>کد</th>
+                    <th>عنوان</th>
+                    <th>نوع</th>
+                    <th>مقدار</th>
+                    <th>حداقل خرید</th>
+                    <th>انقضا</th>
+                    <th>استفاده</th>
+                    <th>وضعیت</th>
+                    <th>عملیات</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var d in list)
+                {
+                    var expired  = d.EndDate.HasValue && d.EndDate < DateTime.Now;
+                    var maxed    = d.MaxUsageCount.HasValue && d.UsedCount >= d.MaxUsageCount;
+                    <tr>
+                        <td><code style="color:var(--gold);letter-spacing:1px;font-weight:700">@d.Code</code></td>
+                        <td>@d.Title</td>
+                        <td>
+                            <span class="badge @(d.Type == Hotel.Domain.Enums.DiscountType.Percentage ? "badge-info" : "badge-gold")">
+                                @(d.Type == Hotel.Domain.Enums.DiscountType.Percentage ? "درصدی" : "مبلغ ثابت")
+                            </span>
+                        </td>
+                        <td style="color:var(--gold);font-weight:600">
+                            @(d.Type == Hotel.Domain.Enums.DiscountType.Percentage ? $"{d.Value}%" : $"{d.Value:N0} تومان")
+                        </td>
+                        <td>@(d.MinimumAmount.HasValue ? d.MinimumAmount.Value.ToString("N0") + " ت" : "—")</td>
+                        <td>@(d.EndDate.HasValue ? d.EndDate.Value.ToString("yy/MM/dd") : "—")</td>
+                        <td>
+                            @d.UsedCount
+                            @if (d.MaxUsageCount.HasValue) { <span style="color:var(--text-muted)">/ @d.MaxUsageCount</span> }
+                        </td>
+                        <td>
+                            @if (!d.IsActive || expired || maxed)
+                            { <span class="badge badge-danger">@(expired?"منقضی":maxed?"تمام شده":"غیرفعال")</span> }
+                            else
+                            { <span class="badge badge-success">فعال</span> }
+                        </td>
+                        <td>
+                            <div style="display:flex;gap:6px">
+                                <a href="/Admin/Discounts/Edit/@d.Id" class="btn btn-dark btn-sm" title="ویرایش"><i class="fas fa-edit"></i></a>
+                                <button onclick="toggleActive(@d.Id)" class="btn btn-sm @(d.IsActive?"":"btn-gold")" style="@(d.IsActive?"background:rgba(212,175,55,.1);color:var(--gold);border:1px solid var(--gold)":"")" title="@(d.IsActive?"غیرفعال":"فعال‌سازی")">
+                                    <i class="fas @(d.IsActive?"fa-toggle-on":"fa-toggle-off")"></i>
+                                </button>
+                                <button onclick="deleteDiscount(@d.Id)" class="btn btn-sm" style="background:rgba(231,76,60,.1);color:#e74c3c;border:1px solid #e74c3c" title="حذف"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </td>
+                    </tr>
+                }
+                @if (!list.Any())
+                {
+                    <tr><td colspan="9" style="text-align:center;padding:40px;color:var(--text-muted)">
+                        هنوز کد تخفیفی ایجاد نشده — <a href="/Admin/Discounts/Create" style="color:var(--gold)">اولین کد را بسازید</a>
+                    </td></tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+const tok = ()=> document.querySelector('[name=__RequestVerificationToken]')?.value||'';
+
+function toggleActive(id){
+    fetch(`/Admin/Discounts/ToggleActive`,{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:`id=${id}&__RequestVerificationToken=${encodeURIComponent(tok())}`})
+    .then(r=>r.json()).then(d=>{ if(d.success) location.reload(); });
+}
+
+function deleteDiscount(id){
+    if(!confirm('این کد تخفیف حذف شود؟')) return;
+    fetch(`/Admin/Discounts/Delete`,{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:`id=${id}&__RequestVerificationToken=${encodeURIComponent(tok())}`})
+    .then(r=>r.json()).then(d=>{ if(d.success) location.reload(); });
+}
+</script>
+}

@@ -1,0 +1,82 @@
+.vs/
+**/bin/
+**/obj/
+**/*.user
+**/*.suo
+*.log
+publish/
+Hotel.Web/wwwroot/uploads/
+keys/
+appsettings.Local.json
+appsettings.*.Local.json
+رمز*.txt
+
+# Secrets
+.env
+.env.*
+!.env.example
+**/appsettings.Development.json
+**/appsettings.Production.json
+secrets.json
+*.pfx
+*.p12
+*.pem
+
+# AI assistant / local notes
+CLAUDE.md
+AGENTS.md
+.claude/
+.codex/
+.agents/
+
+# Databases
+*.db
+*.db-shm
+*.db-wal
+*.mdf
+*.ldf
+*.sqlite
+*.sqlite3
+
+# Node
+node_modules/
+dist/
+build/
+out/
+.next/
+.vite/
+*.tsbuildinfo
+
+# Python
+venv/
+.venv/
+__pycache__/
+*.pyc
+
+# Binaries, temp
+TestResults/
+publish_*/
+*.exe
+*.msi
+tmp*/
+temp/
+*.pid
+tmp_*.mjs
+tmp_*.ps1
+tmp_*.js
+
+# Media & archives
+*.rar
+*.zip
+*.7z
+*.docx
+*.pdf
+*.mp4
+promo-video.html
+
+# Editors / OS
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+desktop.ini
